@@ -8,8 +8,8 @@
       <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         <div v-for="(post, index) in posts" :key="index"
           class="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg overflow-hidden transition-shadow duration-300">
-          <img :src="post.image" :alt="`Image for post titled ${post.title}`"
-            class="w-full h-48 object-cover transition-transform duration-500 hover:scale-105" />
+          <!-- <img :src="post.image" :alt="`Image for post titled ${post.title}`"
+            class="w-full h-48 object-cover transition-transform duration-500 hover:scale-105" /> -->
           <div class="p-6">
             <h2 class="text-xl font-semibold text-teal-500 dark:text-teal-200 mb-3">{{ post.title }}</h2>
             <p class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ post.content }}</p>

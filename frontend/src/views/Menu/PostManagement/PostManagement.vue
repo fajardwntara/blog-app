@@ -72,9 +72,9 @@
                 </div>
 
             </template>
-            
+
             <template #add-form v-if="activeTab == 'Category'">
-                
+
                 <!-- Title Input -->
                 <div class="block">
                     <span class="text-sm">Name</span>
@@ -107,7 +107,7 @@
             <!-- ConfirmDialog -->
             <ConfirmDialog ref="confirmDialog" />
             <!-- Site header -->
-            <Header :sidebarOpen="sidebarOpen" @toggle-sidebar="sidebarOpen = !sidebarOpen" />
+            <Header :sidebarOpen="sidebarOpen" @toggle-sidebar="sidebarOpen = !sidebarOpen" :show-user-menu="true" />
 
             <main class="grow">
                 <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
@@ -141,9 +141,9 @@
 
                     <div class="p-4 shadow-xl bg-white rounded-lg">
 
-                        <ListTable v-if="activeTab === 'Post' && posts" :data="posts" :currentPage="postCurrentPage" :pageSize="postPageSize"
-                            :totalPages="postTotalPages" :prevPage="postPrevPage" :nextPage="postNextPage"
-                            :columns="['category_title', 'title', 'content']"
+                        <ListTable v-if="activeTab === 'Post' && posts" :data="posts" :currentPage="postCurrentPage"
+                            :pageSize="postPageSize" :totalPages="postTotalPages" :prevPage="postPrevPage"
+                            :nextPage="postNextPage" :columns="['category_title', 'title', 'content']"
                             :headerColumns="['category', 'title', 'content', 'Actions']">
 
                             <template #add-button>
@@ -185,10 +185,10 @@
 
                         <!-- Category -->
 
-                        <ListTable v-if="activeTab === 'Category' && categories" :data="categories" :currentPage="categoryCurrentPage" :pageSize="categoryPageSize"
+                        <ListTable v-if="activeTab === 'Category' && categories" :data="categories"
+                            :currentPage="categoryCurrentPage" :pageSize="categoryPageSize"
                             :totalPages="categoryTotalPages" :prevPage="categoryPrevPage" :nextPage="categoryNextPage"
-                            :columns="['name',]"
-                            :headerColumns="['category', 'Actions']">
+                            :columns="['name',]" :headerColumns="['category', 'Actions']">
 
                             <template #add-button>
                                 <button @click="addCategory()"
@@ -229,6 +229,30 @@
 
                     </div>
 
+                    <h1 class="text-lg text-gray-800 dark:text-gray-100 font-bold mt-18">
+                        History & Note ({{ activeTab }})
+                    </h1>
+                    <div class="p-4 shadow-xl bg-white rounded-lg">
+                        <ListTable v-if="activeTab === 'Post' && auditPosts" :data="auditPosts"
+                            :currentPage="auditPostCurrentPage" :pageSize="auditPageSize"
+                            :totalPages="auditPostTotalPages" :prevPage="auditPostPrevPage"
+                            :nextPage="auditPostNextPage"
+                            :columns="['user', 'event', 'old_values', 'new_values', 'created_at', 'updated_at']"
+                            :headerColumns="['User', 'Event', 'Old Values', 'New Values', 'Created At', 'Updated At']">
+                        </ListTable>
+
+                        <!-- Category -->
+
+                        <ListTable v-if="activeTab === 'Category' && auditCategories" :data="auditCategories"
+                            :currentPage="auditCategoryCurrentPage" :pageSize="auditPageSize"
+                            :totalPages="auditCategoryTotalPages" :prevPage="auditCategoryPrevPage"
+                            :nextPage="auditCategoryNextPage"
+                            :columns="['user', 'event', 'old_values', 'new_values', 'created_at', 'updated_at']"
+                            :headerColumns="['User', 'Event', 'Old Values', 'New Values', 'Created At', 'Updated At']">
+                        </ListTable>
+
+                    </div>
+
                 </div>
             </main>
 
@@ -246,6 +270,7 @@ import { apiDelete, apiGet, apiPost, apiPut } from '@/lib/axios'
 import ListTable from '@/components/ui/ListTable.vue';
 import ModalForm from '@/components/ui/ModalForm.vue'
 import moment from 'moment';
+import { formatDate } from '@/utils/Utils';
 
 const sidebarOpen = ref(false)
 const confirmDialog = ref(null)
@@ -283,11 +308,11 @@ const categoryForm = ref({ ...defaultCategoryForm })
 
 /* post pagination */
 const categoryPrevPage = () => {
-    if (postCurrentPage.value > 1) postCurrentPage.value--
+    if (categoryCurrentPage.value > 1) categoryCurrentPage.value--
 }
 
 const categoryNextPage = () => {
-    if (postCurrentPage.value < postTotalPages.value) postCurrentPage.value++
+    if (categoryCurrentPage.value < categoryTotalPages.value) categoryCurrentPage.value++
 }
 
 const getCategory = async () => {
@@ -303,7 +328,7 @@ const getCategory = async () => {
             id: res.id,
             name: res.name,
         }));
-
+        categoryTotalPages.value = Math.ceil(result.length / categoryPageSize);
     } catch (error) {
         console.error('error getCategory: ', error)
     } finally {
@@ -334,8 +359,7 @@ const postCategory = async () => {
             alert.type = "success";
             alert.visible = true;
             addCategory();
-            getCategory();
-            getPost();
+            reloadFunctions();
         }
 
     } catch (error) {
@@ -348,7 +372,7 @@ const postCategory = async () => {
     }
 }
 
-const editCategory = (data) => { 
+const editCategory = (data) => {
     categoryForm.value = { ...data }
     isEdit.value = true;
     showModal.value = true;
@@ -368,8 +392,7 @@ const updateCategory = async () => {
             alert.type = "success";
             alert.visible = true;
             addCategory();
-            getCategory();
-            getPost();
+            reloadFunctions();
         }
 
     } catch (error) {
@@ -383,7 +406,6 @@ const updateCategory = async () => {
 }
 
 const deleteCategory = async (id) => {
-    console.log("id: ", id)
     const confirmed = await confirmDialog.value.openDialog(
         'Delete Confirmation',
         'Are you sure you want to delete this post?'
@@ -391,15 +413,14 @@ const deleteCategory = async (id) => {
     if (!confirmed) return
 
     loading.value = true
-    
+
     try {
         const response = await apiDelete(`/api/category/delete/${id}/`)
-        if(response) {
+        if (response) {
             alert.type = 'error';
             alert.message = "Category has been deleted";
             alert.visible = true;
-            getPost();
-            getCategory();
+            reloadFunctions();
         }
     } catch (error) {
         alert.type = 'error';
@@ -483,8 +504,7 @@ const postPost = async () => {
             alert.message = "Successfully added new post.";
             alert.type = "success";
             alert.visible = true;
-            addPost();
-            getPost();
+            reloadFunctions();
         }
 
     } catch (error) {
@@ -512,8 +532,7 @@ const updatePost = async () => {
             alert.message = "Successfully edited post.";
             alert.type = "success";
             alert.visible = true;
-            addPost();
-            getPost();
+            reloadFunctions();
         }
 
     } catch (error) {
@@ -527,7 +546,6 @@ const updatePost = async () => {
 }
 
 const deletePost = async (id) => {
-    console.log("id: ", id)
     const confirmed = await confirmDialog.value.openDialog(
         'Delete Confirmation',
         'Are you sure you want to delete this post?'
@@ -535,14 +553,14 @@ const deletePost = async (id) => {
     if (!confirmed) return
 
     loading.value = true
-    
+
     try {
         const response = await apiDelete(`/api/post/delete/${id}/`)
-        if(response) {
+        if (response) {
             alert.type = 'error';
             alert.message = "Post has been deleted";
             alert.visible = true;
-            getPost();
+            reloadFunctions();
         }
     } catch (error) {
         alert.type = 'error';
@@ -555,13 +573,93 @@ const deletePost = async (id) => {
 }
 
 
+// Audit
+
+const auditPostCurrentPage = ref(1)
+const auditPostTotalPages = ref(1)
+const auditPageSize = 5
+const auditPosts = ref([])
+
+const auditPostPrevPage = () => {
+    if (auditPostCurrentPage.value > 1) auditPostCurrentPage.value--
+}
+
+const auditPostNextPage = () => {
+    if (auditPostCurrentPage.value < auditPostTotalPages.value) auditPostCurrentPage.value++
+}
+
+const auditPost = async () => {
+    loading.value = true;
+    try {
+
+        const response = await apiGet('/api/audits/post', {
+            page: auditPostCurrentPage, size: auditPageSize, useAuth: true
+        });
+
+        const result = response;
+        auditPosts.value = result.map(res => ({
+            user: res.user.name,
+            event: res.event,
+            old_values: res.old_values,
+            new_values: res.new_values,
+            created_at: formatDate(res.created_at),
+            updated_at: formatDate(res.updated_at),
+        }));
+
+        auditPostTotalPages.value = Math.ceil(result.length / auditPageSize);
+    } catch (error) {
+        console.error('error auditPost: ', error)
+    } finally {
+        loading.value = false;
+    }
+}
+
+const auditCategoryCurrentPage = ref(1)
+const auditCategoryTotalPages = ref(1)
+const auditCategories = ref([])
+
+const auditCategoryPrevPage = () => {
+    if (auditCategoryCurrentPage.value > 1) auditCategoryCurrentPage.value--
+}
+
+const auditCategoryNextPage = () => {
+    if (auditCategoryCurrentPage.value < auditCategoryTotalPages.value) auditCategoryCurrentPage.value++
+}
+
+const auditCategory = async () => {
+    loading.value = true;
+    try {
+
+        const response = await apiGet('/api/audits/category', {
+            page: auditCategoryCurrentPage, size: auditPageSize, useAuth: true
+        });
+
+        const result = response;
+        auditCategories.value = result.map(res => ({
+            user: res.user.name,
+            event: res.event,
+            old_values: res.old_values,
+            new_values: res.new_values,
+            created_at: formatDate(res.created_at),
+            updated_at: formatDate(res.updated_at),
+        }));
+
+        auditCategoryTotalPages.value = Math.ceil(result.length / auditPageSize);
+    } catch (error) {
+        console.error('error auditCategory: ', error)
+    } finally {
+        loading.value = false;
+    }
+}
+
+
 /* form handle */
 const addPost = () => {
     showModal.value = !showModal.value;
     clearPostForm();
 }
 
-const editPost = (data) => { 
+const editPost = (data) => {
     postForm.value = { ...data }
     isEdit.value = true;
     showModal.value = true;
@@ -578,7 +676,7 @@ const onSave = async () => {
 const onUpdate = async () => {
     if (activeTab.value == 'Post') {
         updatePost();
-    }else {
+    } else {
         updateCategory();
     }
 }
@@ -587,13 +685,26 @@ const clearPostForm = () => {
     postForm.value = { ...defaultPostForm };
 }
 
+const reloadFunctions = () => {
+    getCategory();
+    getPost();
+    auditPost();
+    auditCategory();
+}
+
 onMounted(() => {
     getCategory();
     getPost();
+    auditPost();
+    auditCategory();
 })
 
 watch(postCurrentPage, () => {
     getPost();
+})
+
+watch(categoryCurrentPage, () => {
+    getCategory();
 })
 
 

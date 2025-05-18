@@ -53,10 +53,10 @@ import { ref, reactive } from 'vue'
 
 import Header from '@/components/partials/Header.vue'
 import { apiPost } from '@/lib/axios';
-import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 const loading = ref(false);
-const router = useRoute();
+const router = useRouter();
 const alert = reactive({
     visible: false,
     type: 'success',

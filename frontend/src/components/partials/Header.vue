@@ -37,6 +37,7 @@
               Login
             </button>
           </div>
+          <UserMenu align="right" v-if="showUserMenu"/>
         </div>
 
 
@@ -50,6 +51,7 @@
 import { defineProps } from 'vue'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 import { useRouter } from 'vue-router';
+import UserMenu from '@/components/ui/DropdownProfile.vue';
 
 const props = defineProps({
   sidebarOpen: Boolean,
@@ -58,6 +60,10 @@ const props = defineProps({
   useBetween: Boolean,
   showBackButton: Boolean,
   showLogin: Boolean,
+  showUserMenu: {
+    type: Boolean,
+    default: false
+  }
 })
 
 const router = useRouter();

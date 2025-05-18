@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\AuditController;
 use Illuminate\Support\Facades\Route;
 
 /* No Authentification */
@@ -35,4 +36,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('/post/create', [PostController::class, 'createPost']);
     Route::put('/post/edit/{id}', [PostController::class, 'updatePost']);
     Route::delete('/post/delete/{id}', [PostController::class, 'deletePost']);
+
+    // Audit
+    Route::get('/audits/post', [AuditController::class, 'postAudits']);
+    Route::get('/audits/category', [AuditController::class, 'categoryAudits']);
 });

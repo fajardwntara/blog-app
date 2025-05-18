@@ -1,3 +1,10 @@
+import moment from 'moment'
+
+export const formatDate = (date) => {
+  return moment(date).format('LL HH:mm')
+}
+
+
 export const formatValueRupiah = (value) => Intl.NumberFormat('id-ID', {
   style: 'currency',
   currency: 'IDR',
