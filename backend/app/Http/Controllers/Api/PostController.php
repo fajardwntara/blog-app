@@ -12,7 +12,7 @@ class PostController extends Controller
 
     public function listPost()
     {
-        $data = Post::with(['category', 'user'])->get();
+        $data = Post::with(['category', 'user'])->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'status' => true,

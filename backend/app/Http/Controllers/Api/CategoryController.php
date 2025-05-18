@@ -34,7 +34,7 @@ class CategoryController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Successfully created a new category',
-                'data' => $category->load(['user'])
+                'data' => $category
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
