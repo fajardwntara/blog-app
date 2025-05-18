@@ -12,7 +12,7 @@
                             Choose the Category
                         </h1>
                         <button @click="handleCategoryModal"
-                            class="text-gray-500 hover:text-slate-600 text-lg font-bold">
+                            class="cursor-pointer text-gray-500 hover:text-slate-600 text-lg font-bold">
                             &times;
                         </button>
                     </div>
@@ -335,6 +335,7 @@ const postCategory = async () => {
             alert.visible = true;
             addCategory();
             getCategory();
+            getPost();
         }
 
     } catch (error) {
@@ -368,6 +369,7 @@ const updateCategory = async () => {
             alert.visible = true;
             addCategory();
             getCategory();
+            getPost();
         }
 
     } catch (error) {
@@ -375,6 +377,35 @@ const updateCategory = async () => {
         alert.message = error;
         alert.visible = true;
         console.error('error updateCategory: ', error)
+    } finally {
+        loading.value = false;
+    }
+}
+
+const deleteCategory = async (id) => {
+    console.log("id: ", id)
+    const confirmed = await confirmDialog.value.openDialog(
+        'Delete Confirmation',
+        'Are you sure you want to delete this post?'
+    )
+    if (!confirmed) return
+
+    loading.value = true
+    
+    try {
+        const response = await apiDelete(`/api/category/delete/${id}/`)
+        if(response) {
+            alert.type = 'error';
+            alert.message = "Category has been deleted";
+            alert.visible = true;
+            getPost();
+            getCategory();
+        }
+    } catch (error) {
+        alert.type = 'error';
+        alert.message = error;
+        alert.visible = true;
+        console.error(error)
     } finally {
         loading.value = false;
     }
