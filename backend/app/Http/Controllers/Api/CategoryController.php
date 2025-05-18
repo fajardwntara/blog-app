@@ -53,8 +53,8 @@ class CategoryController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => "Category found",
-                'data' => $category->load(['user']),
-                'audit' => $category->audits()->find($id),
+                'data' => $category,
+                'audit' => $category->audits,
             ], 200);
         } else {
             return response()->json([
@@ -89,12 +89,12 @@ class CategoryController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => $request->name . ' category has been updated to '. $category->name,
-                'data' => $category->load(['user']),
+                'data' => $category,
             ]);
         } catch (\Exception $error) {
             return response()->json([
                 'status' => false,
-                'message' => 'Failed to delete category',
+                'message' => 'Failed to update category',
                 'error' => $error->getMessage(),
             ], 500);
         }

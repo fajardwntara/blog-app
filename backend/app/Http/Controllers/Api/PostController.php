@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -24,14 +23,14 @@ class PostController extends Controller
 
     public function getPost($id)
     {
-        $post = Post::with(['category', 'user'])->find($id);;
+        $post = Post::with(['category', 'user'])->find($id);
 
         if ($post) {
             return response()->json([
                 'status' => true,
                 'message' => "Data found",
-                'data' => $post->load(['category', 'user']),
-                'audit' => $post->audits()->find($id),
+                'data' => $post->load('user'),
+                'audit' => $post->audits,
             ], 200);
         } else {
             return response()->json([
