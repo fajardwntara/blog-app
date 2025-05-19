@@ -1,5 +1,6 @@
 <template>
   <div class="min-w-fit">
+ <BaseAlert v-model="alert.visible" :type="alert.type" :message="alert.message" :duration="2000" />
     <!-- Sidebar backdrop (mobile only) -->
     <div class="fixed inset-0 bg-gray-900/30 z-40 lg:hidden lg:z-auto transition-opacity duration-200"
       :class="sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'" aria-hidden="true"></div>
@@ -58,7 +59,8 @@
                       </g>
                     </svg>
                     <span
-                      class="text-sm font-medium ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Post Management</span>
+                      class="text-sm font-medium ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Post
+                      Management</span>
                   </div>
                 </a>
               </li>
@@ -77,7 +79,7 @@
 
           <ul class="mt-3">
             <!-- Users -->
-            <router-link to="/menu/user" custom v-slot="{ href, navigate, isExactActive }">
+            <!-- <router-link to="/menu/user" custom v-slot="{ href, navigate, isExactActive }" v-if="userRole == 'Admin'">
               <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r"
                 :class="isExactActive && 'from-teal-700/[0.12] dark:from-violet-500/[0.24] to-teal-500/[0.04]'">
                 <a class="block text-gray-800 dark:text-gray-100 truncate transition"
@@ -88,15 +90,31 @@
                       xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.2em" height="1.2em"
                       viewBox="0 0 122.879 122.879" enable-background="new 0 0 122.879 122.879" xml:space="preserve">
                       <g>
-                     <path class="st0" d="M0,95.49L0,80.6c7.12-3.17,34.98-10.16,36.74-19.06c0.79-4.01-1.02-5.94-3-9.1l-6.37-10.15 c-1.49-2.39-2.61-3.24-2.58-6.18c0.02-1.66,0.05-3.29,0.29-4.88c0.3-2.03,0.55-2.1,1.62-3.73c0.72-1.1,0.63-1.43,0.63-3.96v-6.3 c0-7.28,2.68-11.84,7.2-14.42c6.62-3.78,20.04-3.78,26.62,0.08c4.44,2.6,7.06,7.14,7.06,14.34v6.3c0,2.83-0.1,2.91,0.93,4.39 c0.78,1.13,0.95,1.26,1.22,2.64c0.34,1.81,0.37,3.65,0.39,5.54c0.04,2.94-1.08,3.79-2.57,6.18l4.62,2.89l0.77-1.12 c1.54-2.24,2.6-3.79,2.64-7.44c0.02-0.18,0.02-0.37,0.02-0.56l-0.02,0c-0.01-1.1-0.03-2.18-0.08-3.04 c-0.07-1.16-0.18-2.32-0.4-3.47c-0.41-2.14-0.71-2.71-1.61-4.02c-0.08-0.14-0.17-0.27-0.26-0.41l0,0l-0.12-0.17l-0.08-0.12l0,0 l-0.01-0.02l-0.01,0c0-0.03,0.04-0.07,0.04-0.58l0-0.69l0.02,0v-6.3c0-2.11-0.2-4.06-0.57-5.87c12.78-8.69,30.43-0.1,34.06,25.8 c3.49,24.94,18.45,24.05-4.9,24.05l-9.32,0c-0.03,6.35-1.03,9.6,5.56,13.16c6.58,3.56,24.35,5.39,24.35,14.41v5.78 c0,0.46-0.38,0.84-0.85,0.84l-23.37,0V78.73c0-5.75-7.97-6.83-12.17-8.13c-3.84-1.18-8.37-2.58-12.33-4.06 c0.09-1.56-0.04-3.3-0.05-5.32h-9.59c-0.16-0.25-0.27-0.49-0.31-0.73c-0.23-1.17,0.35-2.2,1.16-3.46c0.09-0.12,0.19-0.25,0.27-0.39 l-0.17-0.11v0l0.17,0.1l0.62-0.97l0.22-0.32l-0.01-0.01l6.13-9.78l0.25-0.36l-4.64-2.91l-6.37,10.15c-1.98,3.16-3.79,5.1-3,9.1 c1.75,8.9,27.24,13.91,34.36,17.08v16.86L0,95.49L0,95.49L0,95.49z"/>
-                        </g>
+                        <path class="st0"
+                          d="M0,95.49L0,80.6c7.12-3.17,34.98-10.16,36.74-19.06c0.79-4.01-1.02-5.94-3-9.1l-6.37-10.15 c-1.49-2.39-2.61-3.24-2.58-6.18c0.02-1.66,0.05-3.29,0.29-4.88c0.3-2.03,0.55-2.1,1.62-3.73c0.72-1.1,0.63-1.43,0.63-3.96v-6.3 c0-7.28,2.68-11.84,7.2-14.42c6.62-3.78,20.04-3.78,26.62,0.08c4.44,2.6,7.06,7.14,7.06,14.34v6.3c0,2.83-0.1,2.91,0.93,4.39 c0.78,1.13,0.95,1.26,1.22,2.64c0.34,1.81,0.37,3.65,0.39,5.54c0.04,2.94-1.08,3.79-2.57,6.18l4.62,2.89l0.77-1.12 c1.54-2.24,2.6-3.79,2.64-7.44c0.02-0.18,0.02-0.37,0.02-0.56l-0.02,0c-0.01-1.1-0.03-2.18-0.08-3.04 c-0.07-1.16-0.18-2.32-0.4-3.47c-0.41-2.14-0.71-2.71-1.61-4.02c-0.08-0.14-0.17-0.27-0.26-0.41l0,0l-0.12-0.17l-0.08-0.12l0,0 l-0.01-0.02l-0.01,0c0-0.03,0.04-0.07,0.04-0.58l0-0.69l0.02,0v-6.3c0-2.11-0.2-4.06-0.57-5.87c12.78-8.69,30.43-0.1,34.06,25.8 c3.49,24.94,18.45,24.05-4.9,24.05l-9.32,0c-0.03,6.35-1.03,9.6,5.56,13.16c6.58,3.56,24.35,5.39,24.35,14.41v5.78 c0,0.46-0.38,0.84-0.85,0.84l-23.37,0V78.73c0-5.75-7.97-6.83-12.17-8.13c-3.84-1.18-8.37-2.58-12.33-4.06 c0.09-1.56-0.04-3.3-0.05-5.32h-9.59c-0.16-0.25-0.27-0.49-0.31-0.73c-0.23-1.17,0.35-2.2,1.16-3.46c0.09-0.12,0.19-0.25,0.27-0.39 l-0.17-0.11v0l0.17,0.1l0.62-0.97l0.22-0.32l-0.01-0.01l6.13-9.78l0.25-0.36l-4.64-2.91l-6.37,10.15c-1.98,3.16-3.79,5.1-3,9.1 c1.75,8.9,27.24,13.91,34.36,17.08v16.86L0,95.49L0,95.49L0,95.49z" />
+                      </g>
                     </svg>
                     <span
                       class="text-sm font-medium ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Users</span>
                   </div>
                 </a>
               </li>
-            </router-link>
+            </router-link> -->
+            <li @click="goToUserPage" class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r cursor-pointer"
+              :class="isCurrentRoute('/menu/user') && 'from-teal-700/[0.12] dark:from-violet-500/[0.24] to-teal-500/[0.04]'">
+              <div class="flex items-center">
+                <!-- SVG icon tetap -->
+                <svg class="dark:fill-gray-100" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.2em" height="1.2em"
+                  viewBox="0 0 122.879 122.879" enable-background="new 0 0 122.879 122.879" xml:space="preserve">
+                  <g>
+                    <path class="st0"
+                      d="M0,95.49L0,80.6c7.12-3.17,34.98-10.16,36.74-19.06c0.79-4.01-1.02-5.94-3-9.1l-6.37-10.15 c-1.49-2.39-2.61-3.24-2.58-6.18c0.02-1.66,0.05-3.29,0.29-4.88c0.3-2.03,0.55-2.1,1.62-3.73c0.72-1.1,0.63-1.43,0.63-3.96v-6.3 c0-7.28,2.68-11.84,7.2-14.42c6.62-3.78,20.04-3.78,26.62,0.08c4.44,2.6,7.06,7.14,7.06,14.34v6.3c0,2.83-0.1,2.91,0.93,4.39 c0.78,1.13,0.95,1.26,1.22,2.64c0.34,1.81,0.37,3.65,0.39,5.54c0.04,2.94-1.08,3.79-2.57,6.18l4.62,2.89l0.77-1.12 c1.54-2.24,2.6-3.79,2.64-7.44c0.02-0.18,0.02-0.37,0.02-0.56l-0.02,0c-0.01-1.1-0.03-2.18-0.08-3.04 c-0.07-1.16-0.18-2.32-0.4-3.47c-0.41-2.14-0.71-2.71-1.61-4.02c-0.08-0.14-0.17-0.27-0.26-0.41l0,0l-0.12-0.17l-0.08-0.12l0,0 l-0.01-0.02l-0.01,0c0-0.03,0.04-0.07,0.04-0.58l0-0.69l0.02,0v-6.3c0-2.11-0.2-4.06-0.57-5.87c12.78-8.69,30.43-0.1,34.06,25.8 c3.49,24.94,18.45,24.05-4.9,24.05l-9.32,0c-0.03,6.35-1.03,9.6,5.56,13.16c6.58,3.56,24.35,5.39,24.35,14.41v5.78 c0,0.46-0.38,0.84-0.85,0.84l-23.37,0V78.73c0-5.75-7.97-6.83-12.17-8.13c-3.84-1.18-8.37-2.58-12.33-4.06 c0.09-1.56-0.04-3.3-0.05-5.32h-9.59c-0.16-0.25-0.27-0.49-0.31-0.73c-0.23-1.17,0.35-2.2,1.16-3.46c0.09-0.12,0.19-0.25,0.27-0.39 l-0.17-0.11v0l0.17,0.1l0.62-0.97l0.22-0.32l-0.01-0.01l6.13-9.78l0.25-0.36l-4.64-2.91l-6.37,10.15c-1.98,3.16-3.79,5.1-3,9.1 c1.75,8.9,27.24,13.91,34.36,17.08v16.86L0,95.49L0,95.49L0,95.49z" />
+                  </g>
+                </svg>
+                <span class="text-sm font-medium ml-2">Users</span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
@@ -120,11 +138,86 @@
   </div>
 </template>
 
+<script setup>
+import { ref, onMounted, onUnmounted, watch, reactive } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import SidebarLinkGroup from '@/components/partials/SidebarLinkGroup.vue'
+import { getCurrentUser } from '@/data/User'
+
+const props = defineProps({
+  sidebarOpen: Boolean,
+  variant: String
+})
+
+const emit = defineEmits(['close-sidebar'])
+
+const trigger = ref(null)
+const sidebar = ref(null)
+const userRole = ref('')
+const router = useRouter()
+const route = useRoute()
+
+const alert = reactive({
+  visible: false,
+  type: 'success',
+  message: '',
+})
+
+const isCurrentRoute = (path) => route.path === path
+
+const goToUserPage = () => {
+  if (userRole.value === 'Admin') {
+    router.push('/menu/user')
+  } else {
+    alert.type = 'error';
+    alert.message = 'Only user with Admin role can access';
+    alert.visible = true;
+    return;
+  }
+}
+
+const storedSidebarExpanded = localStorage.getItem('sidebar-expanded')
+const sidebarExpanded = ref(storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true')
+
+const clickHandler = ({ target }) => {
+  if (!sidebar.value || !trigger.value) return
+  if (
+    !props.sidebarOpen ||
+    sidebar.value.contains(target) ||
+    trigger.value.contains(target)
+  ) return
+  emit('close-sidebar')
+}
+
+const keyHandler = ({ key }) => {
+  if (!props.sidebarOpen || key !== 'Escape') return
+  emit('close-sidebar')
+}
+
+onMounted(async () => {
+  document.addEventListener('click', clickHandler)
+  document.addEventListener('keydown', keyHandler)
+  const currentUser = await getCurrentUser()
+  userRole.value = currentUser.role
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', clickHandler)
+  document.removeEventListener('keydown', keyHandler)
+})
+
+watch(sidebarExpanded, () => {
+  localStorage.setItem('sidebar-expanded', sidebarExpanded.value)
+  document.body.classList.toggle('sidebar-expanded', sidebarExpanded.value)
+})
+</script>
+
+<!-- 
 <script>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-
 import SidebarLinkGroup from '@/components/partials/SidebarLinkGroup.vue'
+import { getCurrentUser } from '@/data/User'
 
 export default {
   name: 'Sidebar',
@@ -139,6 +232,7 @@ export default {
 
     const trigger = ref(null)
     const sidebar = ref(null)
+    const userRole = ref('')
 
     const storedSidebarExpanded = localStorage.getItem('sidebar-expanded')
     const sidebarExpanded = ref(storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true')
@@ -162,14 +256,17 @@ export default {
       emit('close-sidebar')
     }
 
-    onMounted(() => {
+    onMounted(async () => {
       document.addEventListener('click', clickHandler)
       document.addEventListener('keydown', keyHandler)
+      const currentUser = await getCurrentUser()
+      userRole.value = currentUser.role
     })
 
-    onUnmounted(() => {
+    onUnmounted(async () => {
       document.removeEventListener('click', clickHandler)
       document.removeEventListener('keydown', keyHandler)
+
     })
 
     watch(sidebarExpanded, () => {
@@ -185,8 +282,9 @@ export default {
       trigger,
       sidebar,
       sidebarExpanded,
-      currentRoute
+      currentRoute,
+      userRole
     }
   },
 }
-</script>s
+</script> -->

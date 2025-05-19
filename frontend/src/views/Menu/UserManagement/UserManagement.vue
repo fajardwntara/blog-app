@@ -289,14 +289,13 @@ const updateUser = async () => {
     loading.value = true;
 
     if (userForm.value.password != userForm.value.password_confirmation) {
-        console.log("sene")
         alert.message = "Password and Password Confirmation do not match.";
         alert.type = "error";
         alert.visible = true;
         loading.value = false;
         return;
     }
-    console.log("userForm.value : ", userForm.value)
+
     try {
         const response = await apiPut(`/api/user/update/${userForm.value.id}/`, {
             'email': userForm.value.email,
@@ -325,7 +324,6 @@ const updateUser = async () => {
 }
 
 const deleteUser = async (id) => {
-    console.log("ID : ", id)
     const confirmed = await confirmDialog.value.openDialog(
         'Delete Confirmation',
         'Are you sure you want to delete this user?'
@@ -374,7 +372,6 @@ const auditUser = async () => {
         const response = await apiGet('/api/audits/user', {
             page: auditUserCurrentPage, size: userPageSize, useAuth: true
         });
-        console.log("response : ", response)
         
         const result = response;
         auditUsers.value = result.map(res => ({
@@ -401,7 +398,6 @@ const addUser = () => {
 }
 
 const editUser = (data) => {
-    console.log("DATA : ", data)
     userForm.value = { ...data }
     isEdit.value = true;
     showModal.value = true;

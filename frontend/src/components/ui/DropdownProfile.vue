@@ -39,7 +39,7 @@
           <li>
             <router-link
               class="font-medium text-sm text-slate-500 hover:text-slate-600 dark:hover:text-slate-400 flex items-center py-1 px-3"
-              to="/login" @click="signOut">Sign Out</router-link>
+              to="/" @click="signOut">Sign Out</router-link>
           </li>
         </ul>
       </div>
@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { apiGet } from '@/lib/axios'
+import { getCurrentUser } from '@/data/User'
 import { ref, onMounted, onUnmounted } from 'vue'
 
 export default {
@@ -69,7 +69,7 @@ export default {
 
     const fetchUser = async () => {
       try {
-        const response = await apiGet('api/user')
+        const response = await getCurrentUser()
         if (response) {
           user.value = response
           loading.value = false
