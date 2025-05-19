@@ -4,6 +4,7 @@ import Post from '@/views/Post/Post.vue'
 import PostManagement from '@/views/Menu/PostManagement/PostManagement.vue'
 import NotFound from '@/views/NotFound.vue'
 import PostDetail from '@/views/Post/PostDetail.vue'
+import UserManagement from '@/views/Menu/UserManagement/UserManagement.vue'
 
 const routes = [
   { path: '/', component: Post, meta: { requiresAuth: false } },
@@ -12,6 +13,7 @@ const routes = [
 
   // Protected route:
   { path: '/menu/post', component: PostManagement, meta: { requiresAuth: true } },
+  { path: '/menu/user', component: UserManagement, meta: { requiresAuth: true } },
 
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
 ]

@@ -304,7 +304,7 @@ const defaultCategoryForm = ref({
     id: '',
     name: '',
 })
-const categoryForm = ref({ ...defaultCategoryForm })
+const categoryForm = ref({ ...defaultCategoryForm.value })
 
 /* post pagination */
 const categoryPrevPage = () => {
@@ -337,7 +337,7 @@ const getCategory = async () => {
 }
 
 const clearCategoryForm = () => {
-    categoryForm.value = { ...defaultCategoryForm };
+    categoryForm.value = { ...defaultCategoryForm.value };
 }
 
 const addCategory = () => {
@@ -445,7 +445,7 @@ const defaultPostForm = ref({
     title: '',
     content: '',
 })
-const postForm = ref({ ...defaultPostForm })
+const postForm = ref({ ...defaultPostForm.value })
 
 /* post pagination */
 const postPrevPage = () => {
@@ -598,7 +598,7 @@ const auditPost = async () => {
 
         const result = response;
         auditPosts.value = result.map(res => ({
-            user: res.user.name,
+            user: res.user?.name || 'Unknown',
             event: res.event,
             old_values: res.old_values,
             new_values: res.new_values,
@@ -636,7 +636,7 @@ const auditCategory = async () => {
 
         const result = response;
         auditCategories.value = result.map(res => ({
-            user: res.user.name,
+            user: res.user?.name || 'Unknown',
             event: res.event,
             old_values: res.old_values,
             new_values: res.new_values,
@@ -682,7 +682,7 @@ const onUpdate = async () => {
 }
 
 const clearPostForm = () => {
-    postForm.value = { ...defaultPostForm };
+    postForm.value = { ...defaultPostForm.value };
 }
 
 const reloadFunctions = () => {

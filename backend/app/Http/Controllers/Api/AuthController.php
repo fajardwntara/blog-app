@@ -82,14 +82,63 @@ class AuthController extends Controller
         }
     }
 
-    public function updateUser(Request $request)
+    public function getAllUser()
     {
         try {
-            $user = Auth::user();
-            $user->update($request->only(['name', 'email']));
+            $user = User::all();
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
             return response()->json($user);
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Failed to update user'], 500);
+            return response()->json(['error' => 'Failed to fetch user profile'], 500);
+        }
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'role' => 'required|string',
+            'password' => 'nullable|string|min:6|confirmed',
+        ]);
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->role = $request->role;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user' => $user,
+        ]);
+    }
+    
+    public function deleteUser($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        try {
+            $user->delete();
+            return response()->json(['message' => 'User deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete user'], 500);
         }
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use OwenIt\Auditing\Models\Audit;
+use App\Models\User;
 use App\Models\Post;
 use App\Models\Category;
 
@@ -38,6 +39,14 @@ class AuditController extends Controller
     public function categoryAudits()
     {
         return Audit::where('auditable_type', Category::class)
+            ->with('user')
+            ->latest()
+            ->get();
+    }
+
+    public function userAudits()
+    {
+        return Audit::where('auditable_type', User::class)
             ->with('user')
             ->latest()
             ->get();

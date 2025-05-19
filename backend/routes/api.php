@@ -24,7 +24,9 @@ Route::get('/post/{id}', [PostController::class, 'getPost']);
 Route::middleware('jwt.auth')->group(function () {
     // User
     Route::get('/user', [AuthController::class, 'getUser']);
-    Route::get('/user/update/{id}', [AuthController::class, 'updateUser']);
+    Route::get('/user/all', [AuthController::class, 'getAllUser']);
+    Route::put('/user/update/{id}', [AuthController::class, 'updateUser']);
+    Route::delete('/user/delete/{id}', [AuthController::class, 'deleteUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Category
@@ -40,4 +42,5 @@ Route::middleware('jwt.auth')->group(function () {
     // Audit
     Route::get('/audits/post', [AuditController::class, 'postAudits']);
     Route::get('/audits/category', [AuditController::class, 'categoryAudits']);
+    Route::get('/audits/user', [AuditController::class, 'userAudits']);
 });

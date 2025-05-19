@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-
+    
     public function listPost()
     {
         $post = Post::with(['category', 'user'])->orderBy('created_at', 'desc')->get();

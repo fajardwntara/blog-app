@@ -77,7 +77,7 @@
 
           <ul class="mt-3">
             <!-- Users -->
-            <router-link to="/user" custom v-slot="{ href, navigate, isExactActive }">
+            <router-link to="/menu/user" custom v-slot="{ href, navigate, isExactActive }">
               <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r"
                 :class="isExactActive && 'from-teal-700/[0.12] dark:from-violet-500/[0.24] to-teal-500/[0.04]'">
                 <a class="block text-gray-800 dark:text-gray-100 truncate transition"
